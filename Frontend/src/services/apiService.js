@@ -32,6 +32,7 @@ export const ordersAPI = {
   getOrder: (orderId) => api.get(`/orders/${orderId}`),
   createOrder: (orderData) => api.post('/orders', orderData),
   cancelOrder: (orderId) => api.put(`/orders/${orderId}/cancel`),
+
   
   // Admin order functions
   getAllOrdersForAdmin: (params = {}) => api.get('/orders/admin/all', { params }),
@@ -39,6 +40,8 @@ export const ordersAPI = {
   updateOrderStatus: (orderId, data) => api.put(`/orders/admin/${orderId}/status`, data),
   bulkUpdateOrderStatus: (data) => api.put('/orders/admin/bulk-update', data),
   getOrderStats: () => api.get('/orders/admin/stats'),
+  updateProduct: (id, data) => api.put(`/products/${id}`, data),
+
 };
 
 // Profile API calls  

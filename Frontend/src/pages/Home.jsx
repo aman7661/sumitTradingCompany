@@ -79,6 +79,8 @@ const Home = () => {
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2334d399' fill-opacity='0.4'%3E%3Cpath d='m36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
           }}></div>
         </div>
+
+        
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
           <div className="text-center">
@@ -103,6 +105,36 @@ const Home = () => {
             <p className="text-lg mb-12 text-gray-600 max-w-2xl mx-auto">
               From farm-fresh vegetables to premium dairy products - everything you need for a healthy lifestyle
             </p>
+            {/* Test Credentials */}
+            <div className="mt-8 max-w-xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+              <div className="rounded-2xl border border-emerald-100 bg-white/80 p-4 shadow-sm backdrop-blur">
+                <div className="mb-2 flex items-center text-sm font-semibold text-emerald-700">
+                  <ShieldCheckIcon className="mr-2 h-4 w-4" />
+                  Test Customer Login
+                </div>
+                <p className="text-xs text-gray-500 mb-2">
+                  Use these credentials to explore the customer experience.
+                </p>
+                <div className="text-sm space-y-1 font-mono text-gray-800">
+                  <div><span className="font-semibold">Email:</span> testuser@sumittrading.com</div>
+                  <div><span className="font-semibold">Password:</span> Test@123</div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-teal-100 bg-white/80 p-4 shadow-sm backdrop-blur">
+                <div className="mb-2 flex items-center text-sm font-semibold text-teal-700">
+                  <StarIcon className="mr-2 h-4 w-4" />
+                  Test Admin Login
+                </div>
+                <p className="text-xs text-gray-500 mb-2">
+                  Use only for demo to manage products and orders.
+                </p>
+                <div className="text-sm space-y-1 font-mono text-gray-800">
+                  <div><span className="font-semibold">Email:</span> admin@sumittrading.com</div>
+                  <div><span className="font-semibold">Password:</span> Admin@123</div>
+                </div>
+              </div>
+            </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link 
@@ -123,6 +155,7 @@ const Home = () => {
                 </Link>
               )}
             </div>
+            
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">

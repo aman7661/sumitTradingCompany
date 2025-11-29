@@ -254,12 +254,13 @@ const categories = [
                         <EyeIcon className="h-4 w-4" />
                       </Link>
                       <Link
-                        to={`/admin/products/${product._id}/edit`}
-                        className="text-blue-600 hover:text-blue-900"
-                        title="Edit Product"
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </Link>
+                          to={`/admin/products/${product._id}/edit`}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="Edit Product"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </Link>
+                      
                       <button
                         onClick={() => handleDeleteProduct(product._id, product.name)}
                         className="text-red-600 hover:text-red-900"

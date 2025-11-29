@@ -31,20 +31,11 @@ const ProductForm = () => {
   const [success, setSuccess] = useState('');
 
   const categories = [
-    'Pooja Needs',
-    'Cooking Essentials', 
-    'Snacks & Namkeens',
-    'Home Cleaning',
-    'Disposables',
-    'Dairy & Beverages',
-    'Grains & Pulses',
-    'Spices & Seasonings',
-    'Oil & Ghee',
-    'Baking Essentials',
-    'Health & Wellness',
-    'Baby Care',
-    'Personal Care',
-    'Kitchen Utensils'
+    'Pooja Needs', 'Cooking Essentials', 'Snacks & Namkeens',
+    'Home Cleaning', 'Disposables', 'Dairy & Beverages',
+    'Grains & Pulses', 'Spices & Seasonings',
+    'Oil & Ghee', 'Baking Essentials', 'Health & Wellness',
+    'Baby Care', 'Personal Care', 'Kitchen Utensils'
   ];
 
   const units = ['kg', 'g', 'l', 'ml', 'piece', 'pack', 'dozen'];
@@ -60,10 +51,21 @@ const ProductForm = () => {
       setLoading(true);
       const response = await productsAPI.getProduct(id);
       if (response.data.success) {
-        setFormData(response.data.product);
+        setFormData({
+          ...response.data.product,
+          price: response.data.product.price.toString(),
+          discountPrice: response.data.product.discountPrice
+            ? response.data.product.discountPrice.toString()
+            : '',
+          stock: response.data.product.stock.toString(),
+          images: response.data.product.images.length
+            ? response.data.product.images.map(img => ({
+                url: img.url || ''
+              }))
+            : [{ url: '' }]
+        });
       }
     } catch (error) {
-      console.error('Error fetching product:', error);
       setError('Failed to load product details');
     } finally {
       setLoading(false);
@@ -100,26 +102,60 @@ const ProductForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // Block double submit
     setLoading(true);
     setError('');
     setSuccess('');
 
+    if (
+      !formData.name || !formData.description ||
+      !formData.price || !formData.brand || !formData.subcategory
+    ) {
+      setError('Please fill in all required fields');
+      setLoading(false);
+      return;
+    }
+
+    const cleanedData = {
+      name: formData.name,
+      description: formData.description,
+      price: parseFloat(formData.price),
+      discountPrice: formData.discountPrice
+        ? parseFloat(formData.discountPrice)
+        : undefined,
+      category: formData.category,
+      subcategory: formData.subcategory,
+      brand: formData.brand,
+      unit: formData.unit,
+      images: formData.images
+        .filter(img => img.url && img.url.trim() !== '')
+        .map(img => ({
+          public_id: '',
+          url: img.url.trim()
+        })),
+      stock: parseInt(formData.stock),
+      isActive: formData.isActive,
+      featured: formData.featured
+    };
+
+    if (
+      cleanedData.discountPrice !== undefined &&
+      cleanedData.discountPrice !== null &&
+      cleanedData.discountPrice !== '' &&
+      cleanedData.discountPrice >= cleanedData.price
+    ) {
+      setError('Discount price must be less than price.');
+      setLoading(false);
+      return;
+    }
+
+    if (!cleanedData.images || cleanedData.images.length === 0) {
+      setError('At least one valid product image is required.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Validate required fields
-      if (!formData.name || !formData.description || !formData.price || !formData.brand || !formData.subcategory) {
-        setError('Please fill in all required fields');
-        return;
-      }
-
-      // Filter out empty images
-      const cleanedData = {
-        ...formData,
-        images: formData.images.filter(img => img.url.trim() !== ''),
-        price: parseFloat(formData.price),
-        discountPrice: formData.discountPrice ? parseFloat(formData.discountPrice) : null,
-        stock: parseInt(formData.stock)
-      };
-
       let response;
       if (isEdit) {
         response = await productsAPI.updateProduct(id, cleanedData);
@@ -131,11 +167,10 @@ const ProductForm = () => {
         setSuccess(`Product ${isEdit ? 'updated' : 'created'} successfully!`);
         setTimeout(() => {
           navigate('/admin/products');
-        }, 1500);
+        }, 1200);
       }
     } catch (error) {
-      console.error('Error saving product:', error);
-      setError(error.response?.data?.message || 'Failed to save product');
+      setError(error.response?.data?.error || error.response?.data?.message || 'Failed to save product');
     } finally {
       setLoading(false);
     }
@@ -151,9 +186,9 @@ const ProductForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
       <div className="flex items-center space-x-4">
         <button
+          type="button"
           onClick={() => navigate('/admin/products')}
           className="flex items-center text-gray-600 hover:text-emerald-600 transition-colors"
         >
@@ -165,7 +200,6 @@ const ProductForm = () => {
         </h1>
       </div>
 
-      {/* Success/Error Messages */}
       {success && (
         <div className="bg-green-100 text-green-700 p-4 rounded-lg">
           {success}
@@ -178,17 +212,13 @@ const ProductForm = () => {
         </div>
       )}
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Basic Information */}
+
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Basic Information</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Product Name *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
               <input
                 type="text"
                 name="name"
@@ -199,11 +229,8 @@ const ProductForm = () => {
                 placeholder="Enter product name"
               />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Brand *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Brand *</label>
               <input
                 type="text"
                 name="brand"
@@ -214,11 +241,8 @@ const ProductForm = () => {
                 placeholder="Enter brand name"
               />
             </div>
-
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -229,11 +253,8 @@ const ProductForm = () => {
                 placeholder="Enter product description"
               />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
               <select
                 name="category"
                 value={formData.category}
@@ -247,11 +268,8 @@ const ProductForm = () => {
                 ))}
               </select>
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Subcategory *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Subcategory *</label>
               <input
                 type="text"
                 name="subcategory"
@@ -262,11 +280,8 @@ const ProductForm = () => {
                 placeholder="Enter subcategory (e.g., Rice, Bhujia, etc.)"
               />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Unit *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
               <select
                 name="unit"
                 value={formData.unit}
@@ -283,15 +298,11 @@ const ProductForm = () => {
           </div>
         </div>
 
-        {/* Pricing & Stock */}
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Pricing & Stock</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Regular Price (₹) *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Regular Price (₹) *</label>
               <input
                 type="number"
                 name="price"
@@ -304,11 +315,8 @@ const ProductForm = () => {
                 placeholder="0.00"
               />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Discount Price (₹)
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Discount Price (₹)</label>
               <input
                 type="number"
                 name="discountPrice"
@@ -320,11 +328,8 @@ const ProductForm = () => {
                 placeholder="0.00"
               />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Stock Quantity *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity *</label>
               <input
                 type="number"
                 name="stock"
@@ -339,10 +344,8 @@ const ProductForm = () => {
           </div>
         </div>
 
-        {/* Images */}
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Product Images</h2>
-          
           <div className="space-y-4">
             {formData.images.map((image, index) => (
               <div key={index} className="flex items-center space-x-4">
@@ -376,7 +379,6 @@ const ProductForm = () => {
                 )}
               </div>
             ))}
-            
             <button
               type="button"
               onClick={addImageField}
@@ -388,10 +390,8 @@ const ProductForm = () => {
           </div>
         </div>
 
-        {/* Settings */}
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Product Settings</h2>
-          
           <div className="space-y-4">
             <div className="flex items-center">
               <input
@@ -406,7 +406,6 @@ const ProductForm = () => {
                 Mark as Featured Product
               </label>
             </div>
-
             <div className="flex items-center">
               <input
                 type="checkbox"
@@ -423,7 +422,6 @@ const ProductForm = () => {
           </div>
         </div>
 
-        {/* Form Actions */}
         <div className="flex items-center justify-end space-x-4 pt-6 border-t">
           <button
             type="button"

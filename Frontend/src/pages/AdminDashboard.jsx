@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { productsAPI } from '../services/apiService';
 import { Link } from 'react-router-dom';
+import { PencilIcon } from '@heroicons/react/24/outline';
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
@@ -266,6 +267,13 @@ const AdminDashboard = () => {
                         >
                           {product.isActive !== false ? 'Hide' : 'Show'}
                         </button>
+                        <Link
+                            to={`/admin/products/${product._id}/edit`}
+                            className="text-blue-600 hover:text-blue-900"
+                            title="Edit Product"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </Link>
                         <button
                           onClick={() => deleteProduct(product._id, product.name)}
                           className="px-3 py-1 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-colors"

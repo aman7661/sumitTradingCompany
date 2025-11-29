@@ -38,13 +38,13 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 group">
-      <Link to={`/products/${product._id}`} className="block aspect-square overflow-hidden">
+      <div className="block aspect-square overflow-hidden">
         <img
           src={product.images?.[0]?.url || 'https://placehold.co/300x300/e5e7eb/6b7280?text=No+Image'}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
-      </Link>
+      </div>
       
       <div className="p-4">
         <h3 className="font-bold text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
@@ -127,13 +127,13 @@ const ProductCard = ({ product }) => {
             </div>
           )}
           
-          {/* View Button */}
+          {/* View Button
           <Link
             to={`/products/${product._id}`}
             className="px-3 py-2 border-2 border-emerald-200 text-emerald-600 rounded-xl hover:bg-emerald-50 transition-colors font-medium"
           >
             View
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>

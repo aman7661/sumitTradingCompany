@@ -18,15 +18,16 @@ const productSchema = new mongoose.Schema({
     min: [0, 'Price cannot be negative']
   },
   discountPrice: {
-    type: Number,
-    min: [0, 'Discount price cannot be negative'],
-    validate: {
-      validator: function(value) {
-        return !value || value < this.price;
-      },
-      message: 'Discount price must be less than regular price'
-    }
-  },
+  type: Number,
+  min: [0, 'Discount price cannot be negative'],
+  validate: {
+    validator: function(value) {
+      return !value || value <= this.price;
+    },
+    message: 'Discount price must be less than or equal to regular price'
+  }
+},
+
   category: {
   type: String,
   required: [true, 'Category is required'],

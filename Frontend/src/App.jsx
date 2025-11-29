@@ -27,6 +27,8 @@ import BestSellers from './pages/BestSellers';
 import Orders from './pages/Orders';
 import OrderDetails from './pages/OrderDetails';
 import OrderSuccess from './pages/OrderSuccess';
+import ProductManagement from './pages/admin/ProductManagement';
+import ProductForm from './pages/admin/ProductForm'
 
 // Protected Route Component
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -95,6 +97,10 @@ const AppContent = () => {
               <AdminOrders />
             </ProtectedRoute>
           } />
+          <Route path="/admin/products" element={<ProductManagement />} />
+<Route path="/admin/products/new" element={<ProductForm />} />
+<Route path="/admin/products/:id/edit" element={<ProductForm />} />
+
         </Routes>
       </main>
       
